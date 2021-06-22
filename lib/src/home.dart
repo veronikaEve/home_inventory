@@ -1,11 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
-
-Future<String> getJson() {
-  return rootBundle.loadString('data/index.json');
-}
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -34,61 +29,50 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: [
             TextField(
-              decoration: InputDecoration(
-                hintText: 'Search for an item ...',
-                border: OutlineInputBorder(),
-                suffixIcon: Icon(Icons.search),
-              ),
-              controller: _controller,
-              onChanged: (String value) async {
-                await showDialog<void>(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return _buildSuggestionDropdown();
-                  },
-                );
-              },
-            ),
+                controller: _controller,
+                decoration: InputDecoration(
+                  hintText: 'Search for an item ...',
+                  border: OutlineInputBorder(),
+                  suffixIcon: Icon(Icons.search),
+                ),
+                onChanged: (String value) async {
+                  if (value != '13') {
+                    return;
+                  }
+                }),
             Container(
               padding: const EdgeInsets.all(8.0),
+              height: 500,
               color: Colors.blue[600],
               alignment: Alignment.center,
-              child: ListView(
-                shrinkWrap: true,
-                children: const <Widget>[
-                  Text("I'm dedicating every day to you"),
-                  Text('Domestic life was never quite my style'),
-                  Text('When you smile, you knock me out, I fall apart'),
-                  Text('And I thought I was so smart'),
-                ],
-              ),
+              child: _buildSuggestionDropdown(),
             )
           ],
         ));
   }
 
   Widget _buildSuggestionDropdown() {
-    var myData = json.decode(await getJson());
+    return FutureBuilder(
+      future: DefaultAssetBundle.of(context).loadString("lib/data/index.json"),
+      builder: (context, snapshot) {
+        var wantedData = 'kitchen';
+        var showData = json.decode(snapshot.data.toString());
+        print(showData['inventory']['rooms'].contains(wantedData));
+        return ListView.builder(
+          padding: const EdgeInsets.all(8),
+          itemCount: showData['inventory']['rooms'].length,
+          itemBuilder: (BuildContext context, int index) {
+            if (showData['inventory']['rooms'][index].contains(wantedData)) {
+              return Text(showData['inventory']['rooms'][index]);
+            }
 
-    return ListView(
-      padding: const EdgeInsets.all(8),
-      children: <Widget>[
-        Container(
-          height: 50,
-          color: Colors.amber[600],
-          child: const Center(child: Text('Entry A')),
-        ),
-        Container(
-          height: 50,
-          color: Colors.amber[500],
-          child: const Center(child: Text('Entry B')),
-        ),
-        Container(
-          height: 50,
-          color: Colors.amber[100],
-          child: const Center(child: Text('Entry C')),
-        ),
-      ],
+            return
+            // print("AAAAAAAAAA🦆🐱");
+            //     print(foundData);
+            //     return Text(if );
+          },
+        );
+      },
     );
   }
 
@@ -100,18 +84,17 @@ class _HomePageState extends State<HomePage> {
   List data = []; // names we get from API
   List filteredData = []; // names filtered by search text
 
-  void _getData() async {
-    final response = ;
-    List tempList = [];
-    for (int i = 0; i < response.data['results'].length; i++) {
-      tempList.add(response.data['results'][i]);
-    }
+  // void _getData() async {
+  //   List tempList = [];
+  //   for (int i = 0; i < response.data['results'].length; i++) {
+  //     tempList.add(response.data['results'][i]);
+  //   }
 
-    setState(() {
-      data = tempList;
-      filteredData = data;
-    });
-  }
+  //   setState(() {
+  //     data = tempList;
+  //     filteredData = data;
+  //   });
+  // }
 
 // Widget _buildList() {
 //   if (!(_searchText.isEmpty)) {
